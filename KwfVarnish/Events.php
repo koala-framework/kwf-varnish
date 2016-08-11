@@ -11,8 +11,13 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
         );
         $ret[] = array(
             'class' => null,
-            'event' => 'Kwf_Events_Event_CreateAssetUrls',
-            'callback' => 'onCreateAssetUrls'
+            'event' => 'Kwf_Events_Event_CreateAssetsPackageUrls',
+            'callback' => 'onCreateAssetsPackageUrls'
+        );
+        $ret[] = array(
+            'class' => null,
+            'event' => 'Kwf_Events_Event_CreateAssetUrl',
+            'callback' => 'onCreateAssetUrl'
         );
         $ret[] = array(
             'class' => null,
@@ -34,14 +39,23 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
 
     public function onCreateMediaUrl(Kwf_Component_Event_CreateMediaUrl $ev)
     {
-
         $varnishDomain = $ev->component->getBaseProperty('varnishDomain');
         if ($varnishDomain) {
             $ev->url = '//'.$varnishDomain.$ev->url;
         }
     }
 
-    public function onCreateAssetUrls(Kwf_Events_Event_CreateAssetUrls $ev)
+    public function onCreateAssetUrl(Kwf_Events_Event_CreateAssetUrl $ev)
+    {
+        if ($ev->subroot) {
+            $varnishDomain = $ev->subroot->getBaseProperty('varnishDomain');
+            if ($varnishDomain) {
+                $ev->url = '//'.$varnishDomain.$ev->url;
+            }
+        }
+    }
+
+    public function onCreateAssetsPackageUrls(Kwf_Events_Event_CreateAssetsPackageUrls $ev)
     {
         if ($ev->subroot) {
             $varnishDomain = $ev->subroot->getBaseProperty('varnishDomain');
