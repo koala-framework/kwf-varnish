@@ -5,7 +5,13 @@ class KwfVarnish_Purge
     {
         $url = parse_url($url);
         $url = $url['scheme'].'://'.$url['host'].'/purge-url'.$url['path'].($url['path'] ? '?'.$url['path'] : '');
-        $c = new Zend_Http_Client($url);
+        $config = array(
+            'adapter'   => 'Zend_Http_Client_Adapter_Curl'
+        );
+        if (Kwf_Config::getValue('http.proxy.host')) {
+            $config['curloptions'][CURLOPT_PROXY] = Kwf_Config::getValue('http.proxy.host').':'.Kwf_Config::getValue('http.proxy.port');
+        }
+        $c = new Zend_Http_Client($url, $config);
         $response = $c->request();
         if ($response->isError()) {
             throw new Kwf_Exception('purge failed: '.$response->getBody());
