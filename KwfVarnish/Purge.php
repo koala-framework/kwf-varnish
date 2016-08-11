@@ -9,7 +9,8 @@ class KwfVarnish_Purge
             'adapter'   => 'Zend_Http_Client_Adapter_Curl'
         );
         if (Kwf_Config::getValue('http.proxy.host')) {
-            $config['curloptions'][CURLOPT_PROXY] = Kwf_Config::getValue('http.proxy.host').':'.Kwf_Config::getValue('http.proxy.port');
+            $config['proxy_host'] = Kwf_Config::getValue('http.proxy.host');
+            $config['proxy_port'] = Kwf_Config::getValue('http.proxy.port');
         }
         $c = new Zend_Http_Client($url, $config);
         $response = $c->request();
