@@ -37,7 +37,7 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
 
         $varnishDomain = $ev->component->getBaseProperty('varnishDomain');
         if ($varnishDomain) {
-            $ev->url = '://'.$varnishDomain.$ev->url;
+            $ev->url = '//'.$varnishDomain.$ev->url;
         }
     }
 
@@ -46,7 +46,7 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
         if ($ev->subroot) {
             $varnishDomain = $ev->subroot->getBaseProperty('varnishDomain');
             if ($varnishDomain) {
-                $ev->prefix = '://'.$varnishDomain;
+                $ev->prefix = '//'.$varnishDomain;
             }
         }
     }
