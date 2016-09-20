@@ -19,7 +19,7 @@ class KwfVarnish_Purge
         }
     }
 
-    public function getVarnishDomains()
+    public static function getVarnishDomains()
     {
         $domains = array();
         if (Kwf_Config::getValue('server.varnishDomain')) {
