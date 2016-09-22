@@ -13,6 +13,9 @@ class KwfVarnish_Purge
             $config['proxy_port'] = Kwf_Config::getValue('http.proxy.port');
         }
         $c = new Zend_Http_Client($url, $config);
+        if (Kwf_Config::getValue('varnish.purge.user')) {
+            $c->setAuth(Kwf_Config::getValue('varnish.purge.user'), Kwf_Config::getValue('varnish.purge.password'));
+        }
         $response = $c->request();
         if ($response->isError()) {
             throw new Kwf_Exception('purge failed: '.$response->getBody());
