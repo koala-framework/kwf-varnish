@@ -40,7 +40,7 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
     public function onCreateMediaUrl(Kwf_Component_Event_CreateMediaUrl $ev)
     {
         $varnishDomain = $ev->component->getBaseProperty('varnishDomain');
-        if ($varnishDomain) {
+        if ($varnishDomain && $ev->component->isVisible()) {
             $ev->url = '//'.$varnishDomain.$ev->url;
         }
     }
