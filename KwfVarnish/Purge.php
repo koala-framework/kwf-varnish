@@ -25,12 +25,12 @@ class KwfVarnish_Purge
     public static function getVarnishDomains()
     {
         $domains = array();
-        if (Kwf_Config::getValue('server.varnishDomain')) {
-            $domains[] = Kwf_Config::getValue('server.varnishDomain');
+        if (Kwf_Config::getValue('varnish.domain')) {
+            $domains[] = Kwf_Config::getValue('varnish.domain');
         }
         foreach (Kwf_Config::getValueArray('kwc.domains') as $i) {
-            if (isset($i['varnishDomain']) && $i['varnishDomain'] && !in_array($i['varnishDomain'], $domains)) {
-                $domains[] = $i['varnishDomain'];
+            if (isset($i['varnish']['domain']) && $i['varnish']['domain'] && !in_array($i['varnish']['domain'], $domains)) {
+                $domains[] = $i['varnish']['domain'];
             }
         }
         return $domains;
