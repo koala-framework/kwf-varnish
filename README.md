@@ -1,12 +1,28 @@
 = Varnish Cache Integration for Koala Framework
 
-Adds support for Caching asset and media urls thru a varnish cache.
+Adds support for varnish reverse proxy cache.
 
-Those urls will use a different domain (varnish.domain). Proxying the whole page thru varnish is currently not supported.
+== Config
 
-== Installation
+Config settings
 
-- add to config.ini: `eventSubscribers.varnish = KwfVarnish_Events`
+- `eventSubscribers.varnish = KwfVarnish_Events`
+- `varnish.mode = full` or `assetsMedia` or `false`
+- `varnish.purge.method = url` (for GET /purge-url/$url) or `method` (for PURGE /$url)
+- `varnish.purge.user = example` (optional)
+- `varnish.purge.password = example` (optional)
+
+
+== Mode `assetsMedia`
+
+Cache asset and media urls thru a varnish cache using a different domain, also called cdn domain.
+
+=== Installation
+
 - configure varnish.domain baseProperty:
     - one cdn domain: `varnish.domain = cdn.example.com`
     - multi domain web with different cdn domains: `kwc.domains.com.varnish.domain = cdn.example.com`
+
+== Mode `full`
+
+Proxy the whole page including all assets media and html thru varnish. The webserver isn't accessible, only varnish.

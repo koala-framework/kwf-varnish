@@ -4,21 +4,26 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
     public function getListeners()
     {
         $ret = parent::getListeners();
-        $ret[] = array(
-            'class' => null,
-            'event' => 'Kwf_Component_Event_CreateMediaUrl',
-            'callback' => 'onCreateMediaUrl'
-        );
-        $ret[] = array(
-            'class' => null,
-            'event' => 'Kwf_Events_Event_CreateAssetsPackageUrls',
-            'callback' => 'onCreateAssetsPackageUrls'
-        );
-        $ret[] = array(
-            'class' => null,
-            'event' => 'Kwf_Events_Event_CreateAssetUrl',
-            'callback' => 'onCreateAssetUrl'
-        );
+        if (!Kwf_Config::getValue('varnish.mode')) {
+            throw new Kwf_Exception("varnish.mode setting is required");
+        }
+        if (Kwf_Config::getValue('varnish.mode') == 'assetsMedia') {
+            $ret[] = array(
+                'class' => null,
+                'event' => 'Kwf_Component_Event_CreateMediaUrl',
+                'callback' => 'onCreateMediaUrl'
+            );
+            $ret[] = array(
+                'class' => null,
+                'event' => 'Kwf_Events_Event_CreateAssetsPackageUrls',
+                'callback' => 'onCreateAssetsPackageUrls'
+            );
+            $ret[] = array(
+                'class' => null,
+                'event' => 'Kwf_Events_Event_CreateAssetUrl',
+                'callback' => 'onCreateAssetUrl'
+            );
+        }
         $ret[] = array(
             'class' => null,
             'event' => 'Kwf_Events_Event_Media_Changed',
@@ -34,6 +39,14 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
             'event' => 'Kwf_Events_Event_Media_ClearAll',
             'callback' => 'onMediaClearAll'
         );
+
+        if (Kwf_Config::getValue('varnish.mode') == 'full') {
+            $ret[] = array(
+                'class' => null,
+                'event' => 'Kwf_Component_Event_ViewCache_ClearFullPage',
+                'callback' => 'onClearFullPage'
+            );
+        }
         return $ret;
     }
 
@@ -67,10 +80,22 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
 
     public function onMediaChanged(Kwf_Events_Event_Media_Changed $ev)
     {
-        $varnishDomain = $ev->component->getBaseProperty('varnish.domain');
-        if ($varnishDomain) {
-            $url = 'http://'.$varnishDomain.'/media/'.$ev->class.'/'.$ev->component->componentId.'/*';
+        if (Kwf_Config::getValue('varnish.mode') == 'assetsMedia') {
+            $varnishDomain = $ev->component->getBaseProperty('varnish.domain');
+            if ($varnishDomain) {
+                $url = 'http://'.$varnishDomain.'/media/'.$ev->class.'/'.$ev->component->componentId.'/*';
+                KwfVarnish_Purge::purge($url);
+            }
+        } else {
+            $domainCmp = $ev->component->getDomainComponent();
+            $url = 'http://'.$domainCmp->getDomain().'/media/'.$ev->class.'/'.$ev->component->componentId.'/*';
             KwfVarnish_Purge::purge($url);
+
+            $preliminaryDomain = $domainCmp->getBaseProperty('preliminaryDomain');
+            if ($preliminaryDomain) {
+                $url = 'http://'.$preliminaryDomain.'/media/'.$ev->class.'/'.$ev->component->componentId.'/*';
+                KwfVarnish_Purge::purge($url);
+            }
         }
     }
 
@@ -83,6 +108,21 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
     {
         foreach (KwfVarnish_Purge::getVarnishDomains() as $domain) {
             KwfVarnish_Purge::purge('http://'.$domain.'/media/*');
+        }
+    }
+
+    public function onClearFullPage(Kwf_Component_Event_ViewCache_ClearFullPage $ev)
+    {
+        if (!$ev->domainComponentId) return;
+        $domainCmp = Kwf_Component_Data_Root::getInstance()
+            ->getComponentById($ev->domainComponentId, array('ignoreVisible'=>true));
+        $domain = $domainCmp->getDomain();
+        $preliminaryDomain = $domainCmp->getBaseProperty('preliminaryDomain');
+        foreach ($ev->urls as $url) {
+            KwfVarnish_Purge::purge('http://'.$domain.$url);
+            if ($preliminaryDomain) {
+                KwfVarnish_Purge::purge('http://'.$preliminaryDomain.$url);
+            }
         }
     }
 }
