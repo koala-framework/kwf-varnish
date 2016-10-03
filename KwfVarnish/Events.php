@@ -39,7 +39,7 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
 
     public function onCreateMediaUrl(Kwf_Component_Event_CreateMediaUrl $ev)
     {
-        $varnishDomain = $ev->component->getBaseProperty('varnishDomain');
+        $varnishDomain = $ev->component->getBaseProperty('varnish.domain');
         if ($varnishDomain && $ev->component->isVisible()) {
             $ev->url = '//'.$varnishDomain.$ev->url;
         }
@@ -48,7 +48,7 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
     public function onCreateAssetUrl(Kwf_Events_Event_CreateAssetUrl $ev)
     {
         if ($ev->subroot) {
-            $varnishDomain = $ev->subroot->getBaseProperty('varnishDomain');
+            $varnishDomain = $ev->subroot->getBaseProperty('varnish.domain');
             if ($varnishDomain) {
                 $ev->url = '//'.$varnishDomain.$ev->url;
             }
@@ -58,7 +58,7 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
     public function onCreateAssetsPackageUrls(Kwf_Events_Event_CreateAssetsPackageUrls $ev)
     {
         if ($ev->subroot) {
-            $varnishDomain = $ev->subroot->getBaseProperty('varnishDomain');
+            $varnishDomain = $ev->subroot->getBaseProperty('varnish.domain');
             if ($varnishDomain) {
                 $ev->prefix = '//'.$varnishDomain;
             }
@@ -67,7 +67,7 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
 
     public function onMediaChanged(Kwf_Events_Event_Media_Changed $ev)
     {
-        $varnishDomain = $ev->component->getBaseProperty('varnishDomain');
+        $varnishDomain = $ev->component->getBaseProperty('varnish.domain');
         if ($varnishDomain) {
             $url = 'http://'.$varnishDomain.'/media/'.$ev->class.'/'.$ev->component->componentId.'/*';
             KwfVarnish_Purge::purge($url);
