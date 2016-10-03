@@ -4,7 +4,7 @@ class KwfVarnish_Purge
     public static function purge($url)
     {
         $url = parse_url($url);
-        $url = $url['scheme'].'://'.$url['host'].'/purge-url'.$url['path'].($url['path'] ? '?'.$url['path'] : '');
+        $url = $url['scheme'].'://'.$url['host'].'/purge-url'.$url['path'].(isset($url['query']) ? '?'.$url['query'] : '');
         $config = array(
             'adapter'   => 'Zend_Http_Client_Adapter_Curl'
         );
