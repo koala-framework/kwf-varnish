@@ -27,7 +27,7 @@ class KwfVarnish_Purge
             $c->setMethod('PURGE');
         }
         if ($domainComponentId) {
-            $c->setHeader('X-Kwf-DomainComponentId', $domainComponentId);
+            $c->setHeaders('X-Kwf-DomainComponentId', $domainComponentId);
         }
         if (Kwf_Config::getValue('varnish.purge.user')) {
             $c->setAuth(Kwf_Config::getValue('varnish.purge.user'), Kwf_Config::getValue('varnish.purge.password'));
