@@ -43,6 +43,11 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
         if (Kwf_Config::getValue('varnish.mode') == 'full') {
             $ret[] = array(
                 'class' => null,
+                'event' => 'Kwf_Component_Event_AfterRender',
+                'callback' => 'onAfterRender'
+            );
+            $ret[] = array(
+                'class' => null,
                 'event' => 'Kwf_Component_Event_ViewCache_ClearFullPage',
                 'callback' => 'onClearFullPage'
             );
@@ -90,12 +95,6 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
             $domainCmp = $ev->component->getDomainComponent();
             $url = 'http://'.$domainCmp->getDomain().'/media/'.$ev->class.'/'.$ev->component->componentId.'/*';
             KwfVarnish_Purge::purge($url);
-
-            $preliminaryDomain = $domainCmp->getBaseProperty('preliminaryDomain');
-            if ($preliminaryDomain) {
-                $url = 'http://'.$preliminaryDomain.'/media/'.$ev->class.'/'.$ev->component->componentId.'/*';
-                KwfVarnish_Purge::purge($url);
-            }
         }
     }
 
@@ -111,18 +110,20 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
         }
     }
 
+    public function onAfterRender(Kwf_Component_Event_AfterRender $ev)
+    {
+        $ev->ret->headers[] = 'X-Kwf-DomainComponentId: '.$ev->component->getDomainComponentId();
+    }
+
     public function onClearFullPage(Kwf_Component_Event_ViewCache_ClearFullPage $ev)
     {
         if (!$ev->domainComponentId) return;
         $domainCmp = Kwf_Component_Data_Root::getInstance()
             ->getComponentById($ev->domainComponentId, array('ignoreVisible'=>true));
         $domain = $domainCmp->getDomain();
-        $preliminaryDomain = $domainCmp->getBaseProperty('preliminaryDomain');
         foreach ($ev->urls as $url) {
-            KwfVarnish_Purge::purge('http://'.$domain.$url);
-            if ($preliminaryDomain) {
-                KwfVarnish_Purge::purge('http://'.$preliminaryDomain.$url);
-            }
+            KwfVarnish_Purge::purge('http://'.$domain.$url, $domainCmp->getDomainComponentId());
         }
     }
+
 }

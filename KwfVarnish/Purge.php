@@ -1,14 +1,20 @@
 <?php
 class KwfVarnish_Purge
 {
-    public static function purge($url)
+    public static function purge($url, $domainComponentId = null)
     {
         if (!Kwf_Config::getValue('varnish.purge.method')) {
             throw new Kwf_Exception('varnish.purge.method is not set');
         }
         if (Kwf_Config::getValue('varnish.purge.method') == 'url') {
             $url = parse_url($url);
-            $url = $url['scheme'].'://'.$url['host'].'/purge-url'.$url['path'].(isset($url['query']) ? '?'.$url['query'] : '');
+            $url = $url['scheme'].'://'.$url['host'].(isset($url['port']) ? ':'.$url['port'] : '')
+                .'/purge-url'.$url['path'].(isset($url['query']) ? '?'.$url['query'] : '');
+        }
+        if (Kwf_Config::getValue('varnish.purge.host')) {
+            $url = parse_url($url);
+            $url = 'http://'.Kwf_Config::getValue('varnish.purge.host').(Kwf_Config::getValue('varnish.purge.port') ? ':'.Kwf_Config::getValue('varnish.purge.port') : '')
+                .$url['path'].(isset($url['query']) ? '?'.$url['query'] : '');
         }
         $config = array(
         );
@@ -19,6 +25,9 @@ class KwfVarnish_Purge
         $c = new Zend_Http_Client($url, $config);
         if (Kwf_Config::getValue('varnish.purge.method') == 'purge') {
             $c->setMethod('PURGE');
+        }
+        if ($domainComponentId) {
+            $c->setHeader('X-Kwf-DomainComponentId', $domainComponentId);
         }
         if (Kwf_Config::getValue('varnish.purge.user')) {
             $c->setAuth(Kwf_Config::getValue('varnish.purge.user'), Kwf_Config::getValue('varnish.purge.password'));
