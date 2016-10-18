@@ -11,8 +11,10 @@ class KwfVarnish_Purge
             $url = $url['scheme'].'://'.$url['host'].(isset($url['port']) ? ':'.$url['port'] : '')
                 .'/purge-url'.$url['path'].(isset($url['query']) ? '?'.$url['query'] : '');
         }
+        $headers = array();
         if (Kwf_Config::getValue('varnish.purge.host')) {
             $url = parse_url($url);
+            $headers['Host'] = $url['host'].(isset($url['port']) ? ':'.$url['port'] : '');
             $url = 'http://'.Kwf_Config::getValue('varnish.purge.host').(Kwf_Config::getValue('varnish.purge.port') ? ':'.Kwf_Config::getValue('varnish.purge.port') : '')
                 .$url['path'].(isset($url['query']) ? '?'.$url['query'] : '');
         }
@@ -23,6 +25,7 @@ class KwfVarnish_Purge
             $config['proxy_port'] = Kwf_Config::getValue('http.proxy.port');
         }
         $c = new Zend_Http_Client($url, $config);
+        $c->setHeaders($headers);
         if (Kwf_Config::getValue('varnish.purge.method') == 'purge') {
             $c->setMethod('PURGE');
         }
