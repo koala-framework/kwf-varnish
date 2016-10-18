@@ -28,13 +28,3 @@ Cache asset and media urls thru a varnish cache using a different domain, also c
 == Mode `full`
 
 Proxy the whole page including all assets media and html thru varnish. The webserver isn't accessible, only varnish.
-
-Varnish must be configured with the followith hash function:
-
-    sub vcl_hash {
-        hash_data(req.url);
-        if (req.http.X-Kwf-DomainComponentId) {
-            hash_data(req.http.X-Kwf-DomainComponentId);
-        }
-        return (lookup);
-    }

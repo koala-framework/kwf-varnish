@@ -1,7 +1,7 @@
 <?php
 class KwfVarnish_Purge
 {
-    public static function purge($url, $domainComponentId = null)
+    public static function purge($url)
     {
         if (!Kwf_Config::getValue('varnish.purge.method')) {
             throw new Kwf_Exception('varnish.purge.method is not set');
@@ -25,9 +25,6 @@ class KwfVarnish_Purge
         $c = new Zend_Http_Client($url, $config);
         if (Kwf_Config::getValue('varnish.purge.method') == 'purge') {
             $c->setMethod('PURGE');
-        }
-        if ($domainComponentId) {
-            $c->setHeaders('X-Kwf-DomainComponentId', $domainComponentId);
         }
         if (Kwf_Config::getValue('varnish.purge.user')) {
             $c->setAuth(Kwf_Config::getValue('varnish.purge.user'), Kwf_Config::getValue('varnish.purge.password'));
