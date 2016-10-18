@@ -3,7 +3,7 @@ class KwfVarnish_Purge
 {
     public static function purgeMediaAssets($relativeUrl)
     {
-        if (Kwf_Config::getValue('varnish.mode') == 'assetsMedia') {
+        if (Kwf_Config::getValue('varnish.purge.assetsMediaIgnoreHost')) {
             self::purge('http://'.Kwf_Config::getValue('server.domain').$relativeUrl);
         } else {
             foreach (KwfVarnish_Purge::getVarnishDomains() as $domain) {
