@@ -1,6 +1,16 @@
 <?php
 class KwfVarnish_Purge
 {
+    public static function purgeMediaAssets($relativeUrl)
+    {
+        if (Kwf_Config::getValue('varnish.mode') == 'assetsMedia') {
+            self::purge('http://'.Kwf_Config::getValue('server.domain').$relativeUrl);
+        } else {
+            foreach (KwfVarnish_Purge::getVarnishDomains() as $domain) {
+                self::purge('http://'.$domain.$relativeUrl);
+            }
+        }
+    }
     public static function purge($url)
     {
         if (!Kwf_Config::getValue('varnish.purge.method')) {
@@ -18,8 +28,7 @@ class KwfVarnish_Purge
             $url = 'http://'.Kwf_Config::getValue('varnish.purge.host').(Kwf_Config::getValue('varnish.purge.port') ? ':'.Kwf_Config::getValue('varnish.purge.port') : '')
                 .$url['path'].(isset($url['query']) ? '?'.$url['query'] : '');
         }
-        $config = array(
-        );
+        $config = array();
         if (Kwf_Config::getValue('http.proxy.host')) {
             $config['proxy_host'] = Kwf_Config::getValue('http.proxy.host');
             $config['proxy_port'] = Kwf_Config::getValue('http.proxy.port');

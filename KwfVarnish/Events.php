@@ -87,9 +87,8 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
                 KwfVarnish_Purge::purge($url);
             }
         } else {
-            $domainCmp = $ev->component->getDomainComponent();
-            $url = 'http://'.$domainCmp->getDomain().'/media/'.$ev->class.'/'.$ev->component->componentId.'/*';
-            KwfVarnish_Purge::purge($url);
+            $url = '/media/'.$ev->class.'/'.$ev->component->componentId.'/*';
+            KwfVarnish_Purge::purgeMediaAssets($url);
         }
     }
 
@@ -100,9 +99,7 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
 
     public function onMediaClearAll(Kwf_Events_Event_Media_ClearAll $ev)
     {
-        foreach (KwfVarnish_Purge::getVarnishDomains() as $domain) {
-            KwfVarnish_Purge::purge('http://'.$domain.'/media/*');
-        }
+        KwfVarnish_Purge::purgeMediaAssets('/media/*');
     }
 
     public function onClearFullPage(Kwf_Component_Event_ViewCache_ClearFullPage $ev)

@@ -3,9 +3,7 @@ class KwfVarnish_ClearCacheTypeAssets extends Kwf_Util_ClearCache_Types_Abstract
 {
     protected function _clearCache($options)
     {
-        foreach (KwfVarnish_Purge::getVarnishDomains() as $domain) {
-            KwfVarnish_Purge::purge('http://'.$domain.'/assets/*');
-        }
+        KwfVarnish_Purge::purgeMediaAssets('/assets/*');
     }
 
     public function getTypeName()
