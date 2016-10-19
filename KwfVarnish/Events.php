@@ -57,11 +57,14 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
 
     public function onCreateAssetsPackageUrls(Kwf_Events_Event_CreateAssetsPackageUrls $ev)
     {
+        $varnishDomain = null;
         if ($ev->subroot) {
             $varnishDomain = $ev->subroot->getBaseProperty('varnish.domain');
-            if ($varnishDomain) {
-                $ev->prefix = '//'.$varnishDomain;
-            }
+        } else {
+            $varnishDomain = Kwf_Config::getValue('varnish.domain');
+        }
+        if ($varnishDomain) {
+            $ev->prefix = '//'.$varnishDomain;
         }
     }
 
