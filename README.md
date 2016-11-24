@@ -7,6 +7,7 @@ Adds support for varnish reverse proxy cache.
 Config settings
 
 - `eventSubscribers.varnish = KwfVarnish_Events`
+- `clearCacheTypes.varnishAssets = KwfVarnish_ClearCacheTypeAssets`
 - `varnish.mode = full` or `assetsMedia` or `false`
 - `varnish.purge.assetsMediaIgnoreHost = false`
 - `varnish.purge.method = url` (for GET /purge-url/$url) or `method` (for PURGE /$url)
