@@ -26,11 +26,6 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
         );
         $ret[] = array(
             'class' => null,
-            'event' => 'Kwf_Events_Event_FetchClearCacheTypes',
-            'callback' => 'onFetchClearCacheTypes'
-        );
-        $ret[] = array(
-            'class' => null,
             'event' => 'Kwf_Events_Event_Media_ClearAll',
             'callback' => 'onMediaClearAll'
         );
@@ -75,11 +70,6 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
             $url = 'http://'.$varnishDomain.'/media/'.$ev->class.'/'.$ev->component->componentId.'/*';
             KwfVarnish_Purge::purge($url);
         }
-    }
-
-    public function onFetchClearCacheTypes(Kwf_Events_Event_FetchClearCacheTypes $ev)
-    {
-        $ev->addType(new KwfVarnish_ClearCacheTypeAssets());
     }
 
     public function onMediaClearAll(Kwf_Events_Event_Media_ClearAll $ev)

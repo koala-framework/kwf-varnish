@@ -6,7 +6,11 @@ Those urls will use a different domain (varnish.domain). Proxying the whole page
 
 == Installation
 
-- add to config.ini: `eventSubscribers.varnish = KwfVarnish_Events`
+- add to config.ini:
+
+    `eventSubscribers.varnish = KwfVarnish_Events`
+    `clearCacheTypes.varnishAssets = KwfVarnish_ClearCacheTypeAssets`
+
 - configure varnish.domain baseProperty:
     - one cdn domain: `varnish.domain = cdn.example.com`
     - multi domain web with different cdn domains: `kwc.domains.com.varnish.domain = cdn.example.com`
