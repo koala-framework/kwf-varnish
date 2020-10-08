@@ -67,7 +67,7 @@ class KwfVarnish_Events extends Kwf_Events_Subscriber
     {
         $varnishDomain = $ev->component->getBaseProperty('varnish.domain');
         if ($varnishDomain) {
-            $url = 'http://'.$varnishDomain.'/media/'.$ev->class.'/'.$ev->component->componentId.'/*';
+            $url = 'http://'.$varnishDomain.'/media/'.rawurlencode($ev->class).'/'.$ev->component->componentId.'/*';
             KwfVarnish_Purge::purge($url);
         }
     }
